@@ -11,14 +11,14 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    @Value("${jwt.secret:mySecretKey}")
-    private String secret;
+    private final SecretKey signingKey;
+    private final Long expiration;
 
-    @Value("${jwt.expiration:86400000}") // 24 horas en milisegundos
-    private Long expiration;
+    public JwtUtil(@Value("${jwt.secret}") String secret,
+                   @Value("${jwt.expiration}") Long expiration) {
 
-    private SecretKey getSigningKey() {
-        return Keys.hmacShaKeyFor(secret.getBytes());
+        this.signingKey = Keys.hmacShaKeyFor(secret.getBytes());
+        this.expiration = expiration;
     }
 
     public String generateToken(String username) {
@@ -29,41 +29,35 @@ public class JwtUtil {
                 .subject(username)
                 .issuedAt(now)
                 .expiration(expiryDate)
-                .signWith(getSigningKey())
+                .signWith(this.signingKey)
                 .compact();
     }
 
-    public String getUsernameFromToken(String token) {
-        Claims claims = Jwts.parser()
-                .verifyWith(getSigningKey())
+    private Claims getAllClaimsFromToken(String token) {
+        return Jwts.parser()
+                .verifyWith(this.signingKey)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
+    }
 
-        return claims.getSubject();
+    public String getUsernameFromToken(String token) {
+        return getAllClaimsFromToken(token).getSubject();
     }
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parser()
-                    .verifyWith(getSigningKey())
-                    .build()
-                    .parseSignedClaims(token);
+            getAllClaimsFromToken(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
+
             return false;
         }
     }
 
     public boolean isTokenExpired(String token) {
         try {
-            Claims claims = Jwts.parser()
-                    .verifyWith(getSigningKey())
-                    .build()
-                    .parseSignedClaims(token)
-                    .getPayload();
-
-            return claims.getExpiration().before(new Date());
+            return getAllClaimsFromToken(token).getExpiration().before(new Date());
         } catch (JwtException | IllegalArgumentException e) {
             return true;
         }

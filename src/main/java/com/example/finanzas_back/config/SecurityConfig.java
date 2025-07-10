@@ -56,21 +56,16 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
 
-        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+        configuration.setAllowedOrigins(Arrays.asList(
+                "https://bonos-corporativos-front-0f90ee.netlify.app",
+                "http://localhost:4200" // Para desarrollo local
+        ));
 
 
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"));
-
-
         configuration.setAllowedHeaders(Arrays.asList("*"));
 
-
-        configuration.setAllowCredentials(false);
-
-        configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers"));
-
-
-        configuration.setMaxAge(3600L);
+        configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

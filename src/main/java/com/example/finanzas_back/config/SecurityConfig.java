@@ -58,10 +58,8 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(Arrays.asList(
-                "https://bonos-corporativos-front-0f90ee.netlify.app",
-                "http://localhost:4200"
-        ));
+        // CAMBIO TEMPORAL PARA DEPURAR
+        configuration.setAllowedOrigins(Arrays.asList("*"));
 
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("*"));

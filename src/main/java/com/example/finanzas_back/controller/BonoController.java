@@ -14,7 +14,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/bonos")
-@CrossOrigin(origins = "*")
 public class BonoController {
 
     @Autowired
